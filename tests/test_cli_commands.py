@@ -38,7 +38,6 @@ def test_cmd_check_no_cache():
 def test_cmd_check_all_packages_installed():
     """Test check command when all cached packages are installed."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Create a mock cache with some packages
         cache_data = {
             'resolved_packages': {
                 'requests': '==2.28.0',
@@ -52,19 +51,17 @@ def test_cmd_check_all_packages_installed():
 
         args = MockArgs(cache_dir=temp_dir)
 
-        with patch('chacc.cli.get_installed_packages', return_value={'requests', 'packaging'}), \
+        with patch('chacc.utils.get_installed_packages', return_value={'requests', 'packaging'}), \
              patch('builtins.print') as mock_print:
 
             cmd_check(args)
 
-        # Should report success
         assert any("✅ All cached packages are properly installed" in str(call) for call in mock_print.call_args_list)
 
 
 def test_cmd_check_missing_packages():
     """Test check command when some cached packages are missing."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Create a mock cache with some packages
         cache_data = {
             'resolved_packages': {
                 'requests': '==2.28.0',
@@ -79,12 +76,11 @@ def test_cmd_check_missing_packages():
 
         args = MockArgs(cache_dir=temp_dir)
 
-        with patch('chacc.cli.get_installed_packages', return_value={'requests', 'packaging'}), \
+        with patch('chacc.utils.get_installed_packages', return_value={'requests', 'packaging'}), \
              patch('builtins.print') as mock_print:
 
             cmd_check(args)
 
-        # Should report missing packages
         assert any("❌ 1 cached packages are missing:" in str(call) for call in mock_print.call_args_list)
         assert any("missing-package==1.0.0" in str(call) for call in mock_print.call_args_list)
 
@@ -92,7 +88,6 @@ def test_cmd_check_missing_packages():
 def test_cmd_check_with_extra_packages():
     """Test check command with --all flag showing extra installed packages."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Create a mock cache with some packages
         cache_data = {
             'resolved_packages': {
                 'requests': '==2.28.0'
@@ -105,12 +100,11 @@ def test_cmd_check_with_extra_packages():
 
         args = MockArgs(cache_dir=temp_dir, all=True)
 
-        with patch('chacc.cli.get_installed_packages', return_value={'requests', 'extra-package'}), \
+        with patch('chacc.utils.get_installed_packages', return_value={'requests', 'extra-package'}), \
              patch('builtins.print') as mock_print:
 
             cmd_check(args)
 
-        # Should report extra packages
         assert any("additional packages installed but not in cache" in str(call) for call in mock_print.call_args_list)
 
 
@@ -142,7 +136,6 @@ def test_cmd_outdated_no_outdated_packages():
 
         args = MockArgs(cache_dir=temp_dir)
 
-        # Mock subprocess.run to return empty outdated list
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = '[]'
@@ -152,14 +145,12 @@ def test_cmd_outdated_no_outdated_packages():
 
             cmd_outdated(args)
 
-        # Should report all packages up-to-date
         assert any("✅ All cached packages are up-to-date" in str(call) for call in mock_print.call_args_list)
 
 
 def test_cmd_outdated_with_outdated_packages():
     """Test outdated command when some packages are outdated."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Create a mock cache with some packages
         cache_data = {
             'resolved_packages': {
                 'requests': '==2.28.0',
@@ -173,7 +164,6 @@ def test_cmd_outdated_with_outdated_packages():
 
         args = MockArgs(cache_dir=temp_dir)
 
-        # Mock subprocess.run to return outdated packages
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = json.dumps([
@@ -194,7 +184,6 @@ def test_cmd_outdated_with_outdated_packages():
 
             cmd_outdated(args)
 
-        # Should report only the cached package that's outdated
         assert any("📦 1 packages have newer versions available:" in str(call) for call in mock_print.call_args_list)
         assert any("requests: 2.28.0 → 2.31.0" in str(call) for call in mock_print.call_args_list)
 
@@ -202,7 +191,6 @@ def test_cmd_outdated_with_outdated_packages():
 def test_cmd_outdated_pip_error():
     """Test outdated command when pip command fails."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Create a mock cache with some packages
         cache_data = {
             'resolved_packages': {
                 'requests': '==2.28.0'
@@ -215,7 +203,6 @@ def test_cmd_outdated_pip_error():
 
         args = MockArgs(cache_dir=temp_dir)
 
-        # Mock subprocess.run to fail
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stderr = 'pip list failed'
@@ -225,7 +212,6 @@ def test_cmd_outdated_pip_error():
 
             cmd_outdated(args)
 
-        # Should report error
         assert any("❌ Failed to check for outdated packages:" in str(call) for call in mock_print.call_args_list)
 
 
