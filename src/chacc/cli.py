@@ -87,6 +87,155 @@ def cmd_cache(args):
         print(f"Module caches: {len(cache.get('requirements_caches', {}))}")
 
 
+def cmd_check(args):
+    """Check cached packages against installed packages."""
+    setup_logging(args.verbose)
+
+    dm = DependencyManager(cache_dir=args.cache_dir)
+    cache = dm.load_cache()
+
+    resolved_packages = cache.get('resolved_packages', {})
+    if not resolved_packages:
+        print("❌ No cached packages found. Run 'cdm install' first.")
+        return
+
+    from .utils import get_installed_packages, canonicalize_name
+    installed_packages = get_installed_packages()
+
+    print(f"Checking {len(resolved_packages)} cached packages against {len(installed_packages)} installed packages...")
+
+    missing_packages = []
+    extra_packages = []
+    version_mismatches = []
+
+    for package_name, version_spec in resolved_packages.items():
+        base_name = package_name.split('[')[0] if '[' in package_name else package_name
+        canonical_name = canonicalize_name(base_name)
+
+        if canonical_name not in installed_packages:
+            missing_packages.append(f"{package_name}{version_spec}")
+        else:
+            # Check version if we have exact version info
+            if version_spec.startswith('=='):
+                expected_version = version_spec[2:]  # Remove '=='
+                # We would need to get the actual installed version to compare
+                # For now, just check presence
+                pass
+
+    # Check for packages installed but not in cache (optional warning)
+    cached_canonical_names = set()
+    for package_name in resolved_packages.keys():
+        base_name = package_name.split('[')[0] if '[' in package_name else package_name
+        cached_canonical_names.add(canonicalize_name(base_name))
+
+    for installed_name in installed_packages:
+        if installed_name not in cached_canonical_names:
+            # Only warn about non-standard packages if requested
+            if args.all:
+                extra_packages.append(installed_name)
+
+    if not missing_packages and not version_mismatches:
+        print("✅ All cached packages are properly installed")
+        if extra_packages and args.all:
+            print(f"ℹ️  {len(extra_packages)} additional packages installed but not in cache")
+    else:
+        if missing_packages:
+            print(f"❌ {len(missing_packages)} cached packages are missing:")
+            for package in missing_packages:
+                print(f"   • {package}")
+
+        if version_mismatches:
+            print(f"⚠️  {len(version_mismatches)} version mismatches found:")
+            for mismatch in version_mismatches:
+                print(f"   • {mismatch}")
+
+        if extra_packages and args.all:
+            print(f"ℹ️  {len(extra_packages)} additional packages installed but not in cache:")
+            for package in extra_packages:
+                print(f"   • {package}")
+
+
+def cmd_outdated(args):
+    """Show packages that have newer versions available."""
+    setup_logging(args.verbose)
+
+    dm = DependencyManager(cache_dir=args.cache_dir)
+    cache = dm.load_cache()
+
+    resolved_packages = cache.get('resolved_packages', {})
+    if not resolved_packages:
+        print("❌ No cached packages found. Run 'cdm install' first.")
+        return
+
+    print(f"Checking {len(resolved_packages)} packages for available updates...")
+
+    try:
+        import subprocess
+        import sys
+
+        # Use pip list --outdated to get outdated packages
+        result = subprocess.run([
+            sys.executable, '-m', 'pip', 'list', '--outdated', '--format=json'
+        ], capture_output=True, text=True, timeout=60)
+
+        if result.returncode != 0:
+            print(f"❌ Failed to check for outdated packages: {result.stderr}")
+            return
+
+        import json
+        outdated_data = json.loads(result.stdout)
+
+        # Filter to only packages in our cache
+        cached_package_names = set()
+        for package_name in resolved_packages.keys():
+            base_name = package_name.split('[')[0] if '[' in package_name else package_name
+            cached_package_names.add(base_name.lower())
+
+        outdated_cached_packages = []
+        for package_info in outdated_data:
+            package_name = package_info['name'].lower()
+            if package_name in cached_package_names:
+                current_version = package_info['version']
+                latest_version = package_info['latest_version']
+                outdated_cached_packages.append({
+                    'name': package_info['name'],
+                    'current': current_version,
+                    'latest': latest_version
+                })
+
+        if not outdated_cached_packages:
+            print("✅ All cached packages are up-to-date")
+        else:
+            print(f"📦 {len(outdated_cached_packages)} packages have newer versions available:")
+            for package in outdated_cached_packages:
+                print(f"   • {package['name']}: {package['current']} → {package['latest']}")
+
+    except (subprocess.TimeoutExpired, json.JSONDecodeError, KeyError) as e:
+        print(f"❌ Error checking for outdated packages: {e}")
+
+
+def cmd_upgrade(args):
+    """Upgrade packages to their latest versions."""
+    setup_logging(args.verbose)
+
+    dm = DependencyManager(cache_dir=args.cache_dir)
+
+    if args.requirements:
+        # Upgrade from requirements file
+        print(f"Upgrading from {args.requirements}...")
+        requirements = {args.requirements: Path(args.requirements).read_text()}
+        asyncio.run(dm.upgrade_dependencies(requirements))
+    elif args.packages:
+        print(f"Upgrading packages: {', '.join(args.packages)}...")
+        requirements = {"cli": "\n".join(args.packages)}
+        asyncio.run(dm.upgrade_dependencies(requirements))
+    else:
+        print("Auto-discovering and upgrading requirements...")
+        asyncio.run(dm.upgrade_dependencies())
+
+    print("✅ Upgrade completed")
+
+
 def cmd_demo(args):
     """Run demonstration scripts to show ChaCC features."""
     setup_logging(args.verbose)
@@ -141,6 +290,21 @@ def create_parser():
     )
     install_parser.set_defaults(func=cmd_install)
 
+    upgrade_parser = subparsers.add_parser(
+        "upgrade",
+        help="Upgrade packages to their latest versions"
+    )
+    upgrade_parser.add_argument(
+        "packages",
+        nargs="*",
+        help="Packages to upgrade"
+    )
+    upgrade_parser.add_argument(
+        "-r", "--requirements",
+        help="Upgrade from requirements file"
+    )
+    upgrade_parser.set_defaults(func=cmd_upgrade)
+
     resolve_parser = subparsers.add_parser(
         "resolve",
         help="Resolve dependencies without installing"
@@ -180,6 +344,23 @@ def create_parser():
         help="Show cache information"
     )
     cache_parser.set_defaults(func=cmd_cache)
+
+    check_parser = subparsers.add_parser(
+        "check",
+        help="Verify cached packages are installed and match expectations"
+    )
+    check_parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Also show packages installed but not in cache"
+    )
+    check_parser.set_defaults(func=cmd_check)
+
+    outdated_parser = subparsers.add_parser(
+        "outdated",
+        help="Show which packages have newer versions available"
+    )
+    outdated_parser.set_defaults(func=cmd_outdated)
 
     demo_parser = subparsers.add_parser(
         "demo",

@@ -278,7 +278,7 @@ class DependencyManager:
     def invalidate_module_cache(self, module_name: str): ...
 ```
 
-## 📋 Recent Updates (v1.1.0)
+## 📋 Recent Updates (v1.2.0)
 
 This major release introduces a complete API overhaul, advanced module-based caching, and comprehensive improvements to user experience and performance.
 

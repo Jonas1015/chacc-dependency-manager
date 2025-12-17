@@ -6,6 +6,7 @@ Provides logging setup, hash calculations, and package management utilities.
 
 import hashlib
 import logging
+import platform
 import subprocess
 import sys
 from typing import Dict, Set
@@ -26,9 +27,18 @@ if not default_logger.handlers:
     default_logger.addHandler(handler)
 
 
+def get_environment_hash() -> str:
+    """Calculate hash of the current environment (Python version and OS)."""
+    python_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    os_info = f"{platform.system()}-{platform.release()}-{platform.machine()}"
+    env_content = f"python:{python_version}:os:{os_info}"
+    return hashlib.sha256(env_content.encode()).hexdigest()
+
+
 def calculate_module_hash(module_name: str, requirements_content: str) -> str:
-    """Calculate hash of a specific module's requirements."""
-    content = f"{module_name}:{requirements_content}"
+    """Calculate hash of a specific module's requirements including environment."""
+    env_hash = get_environment_hash()
+    content = f"{module_name}:{requirements_content}:env:{env_hash}"
     return hashlib.sha256(content.encode()).hexdigest()
 
 

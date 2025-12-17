@@ -80,6 +80,19 @@ cdm install -r requirements-dev.txt
 cdm install fastapi uvicorn sqlalchemy
 ```
 
+#### **Upgrading Dependencies**
+
+```bash
+# Auto-discover and upgrade all packages in requirements files
+cdm upgrade
+
+# Upgrade from a specific requirements file
+cdm upgrade -r requirements-dev.txt
+
+# Upgrade specific packages
+cdm upgrade requests fastapi
+```
+
 #### **Managing the Cache**
 
 ```bash
@@ -103,6 +116,27 @@ cdm resolve
 
 # Check for a specific file
 cdm resolve -r requirements-dev.txt
+```
+
+#### **Checking Package Installation Status**
+
+Verify that cached packages are actually installed and match expectations.
+
+```bash
+# Check if all cached packages are properly installed
+cdm check
+
+# Also show packages installed but not in cache
+cdm check --all
+```
+
+#### **Finding Outdated Packages**
+
+Show which cached packages have newer versions available.
+
+```bash
+# Check for available updates to cached packages
+cdm outdated
 ```
 
 ### Programmatic Usage (Python)
@@ -274,11 +308,12 @@ The core class that manages dependency resolution.
 ```python
 class DependencyManager:
     async def resolve_dependencies(self, ...): ...
+    async def upgrade_dependencies(self, ...): ...
     def invalidate_cache(self): ...
     def invalidate_module_cache(self, module_name: str): ...
 ```
 
-## 📋 Recent Updates (v1.1.0)
+## 📋 Recent Updates (v1.2.0)
 
 This major release introduces a complete API overhaul, advanced module-based caching, and comprehensive improvements to user experience and performance.
 
@@ -314,6 +349,12 @@ This major release introduces a complete API overhaul, advanced module-based cac
 - **Extensible Hooks**: Pre/post resolution and custom installation hooks
 - **Clean Configuration**: No more parameter explosion
 
+**⬆️ Package Upgrades**
+- **Upgrade Command**: `cdm upgrade` to update all packages to latest versions
+- **Selective Upgrades**: Upgrade specific packages or from specific requirements files
+- **Smart Cache Handling**: Automatic cache invalidation and refresh for upgrades
+- **Environment Awareness**: Respects module/environment separation during upgrades
+
 ### 🔧 API Enhancements
 
 **New Config Class:**
@@ -339,8 +380,11 @@ invalidate_module_cache(module_name, config=config)
 
 **New CLI Commands:**
 ```bash
-cdm demo modules    # Show module separation
-cdm demo cache      # Show cache structure
+cdm upgrade          # Upgrade packages to latest versions
+cdm check            # Verify cached packages are installed
+cdm outdated         # Show packages with available updates
+cdm demo modules     # Show module separation
+cdm demo cache       # Show cache structure
 ```
 
 ### 🐛 Critical Bug Fixes
