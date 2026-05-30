@@ -1,14 +1,20 @@
 ***
 
-# ChaCC Dependency Manager
+# ChaCC Dependency Manager (Pip Accelerator)
 
-**Smart dependency resolution with intelligent caching.** ChaCC (Cache-Checked) is a dependency manager for Python that is up to 20x faster than pip for repeated installations. It's designed to accelerate your development workflows, especially in environments like Docker and CI/CD pipelines.
+**Smart dependency resolution with intelligent caching.** ChaCC Dependency Manager (Cache-Checked) is a dependency manager for Python that is up to 20x faster than pip for repeated installations. It's designed to accelerate your development workflows, especially in environments like Docker and CI/CD pipelines.
 
-## 🎯 When to Use ChaCC
+## Our Users
+Our users includes but not limited to: 
+- [ChaCC API](https://pypi.org/project/chacc-api/)
 
-ChaCC is a powerful tool, but it's not always a replacement for pip. Here’s when to choose one over the other:
+Want to be part of this history making list. Kindly, start to use it now
 
-**Use ChaCC when you:**
+## When to Use ChaCC Dependency Manager
+
+ChaCC Dependency Manager is a powerful tool, but it's not always a replacement for pip. Here’s when to choose one over the other:
+
+**Use ChaCC Dependency Manager when you:**
 *   Frequently build Docker images.
 *   Work with projects that have many dependencies.
 *   Manage applications with a modular structure.
@@ -20,13 +26,13 @@ ChaCC is a powerful tool, but it's not always a replacement for pip. Here’s wh
 *   One-off installations of a few packages.
 *   Basic development environments where speed is not a primary concern.
 
-## 🚀 Getting Started
+## Getting Started
 
-Ready to give ChaCC a try? Here's how to get up and running in a few simple steps.
+Ready to give ChaCC Dependency Manager a try? Here's how to get up and running in a few simple steps.
 
-### 📦 Installation
+### Installation
 
-You can install ChaCC using pip. For most users, installing it with the `[resolver]` extra is recommended as it includes the command-line interface (CLI).
+You can install ChaCC Dependency Manager using pip. For most users, installing it with the `[resolver]` extra is recommended as it includes the command-line interface (CLI).
 
 ```bash
 # Recommended installation with CLI commands
@@ -41,31 +47,31 @@ pip install chacc-dependency-manager[full]
 
 ### 🏃‍♀️ Quick Usage
 
-The easiest way to use ChaCC is through its command-line interface.
+The easiest way to use ChaCC Dependency Manager is through its command-line interface.
 
 1.  **Navigate to your project directory** that contains a `requirements.txt` file.
     ```bash
     cd your_project
     ```
-2.  **Run the install command.** ChaCC provides a few aliases for its commands: `chacc-dependency-manager`, `chacc-dm`, or the shortest, `cdm`.
+2.  **Run the install command.** ChaCC Dependency Manager provides a few aliases for its commands: `chacc-dependency-manager`, `chacc-dm`, or the shortest, `cdm`.
     ```bash
     cdm install
     ```
 
-ChaCC will find your `requirements.txt`, resolve the dependencies, and install them. If you run it again, it will use its smart cache to complete the process almost instantly.
+ChaCC Dependency Manager will find your `requirements.txt`, resolve the dependencies, and install them. If you run it again, it will use its smart cache to complete the process almost instantly.
 
 You can also install specific packages directly:
 ```bash
 cdm install fastapi uvicorn
 ```
 
-## 💻 Usage Guide
+## Usage Guide
 
-ChaCC can be used from the command line or programmatically in your Python code.
+ChaCC Dependency Manager can be used from the command line or programmatically in your Python code.
 
 ### Command-Line Interface (CLI)
 
-The CLI is the most common way to interact with ChaCC.
+The CLI is the most common way to interact with ChaCC Dependency Manager.
 
 #### **Installing Dependencies**
 
@@ -108,7 +114,7 @@ cdm cache --clear --module auth
 
 #### **Resolving Dependencies Without Installing**
 
-You can see what ChaCC *would* install without actually installing the packages.
+You can see what ChaCC Dependency Manager *would* install without actually installing the packages.
 
 ```bash
 # Check what would be installed from requirements.txt
@@ -141,11 +147,11 @@ cdm outdated
 
 ### Programmatic Usage (Python)
 
-You can also use ChaCC within your Python applications to manage dependencies dynamically.
+You can also use ChaCC Dependency Manager within your Python applications to manage dependencies dynamically.
 
 #### **Simple Usage**
 
-For most cases, a single function call is all you need. ChaCC will automatically handle caching.
+For most cases, a single function call is all you need. ChaCC Dependency Manager will automatically handle caching.
 
 ```python
 import asyncio
@@ -190,9 +196,9 @@ dm = DependencyManager(
 asyncio.run(dm.resolve_dependencies())
 ```
 
-## 🚀 Why is ChaCC Faster?
+## Why is ChaCC Dependency Manager Faster?
 
-ChaCC's primary advantage is its intelligent caching. On the first run, its speed is comparable to pip. However, for subsequent runs, the speed improvements are significant, especially in automated environments.
+ChaCC Dependency Manager's primary advantage is its intelligent caching. On the first run, its speed is comparable to pip. However, for subsequent runs, the speed improvements are significant, especially in automated environments.
 
 | Scenario | `pip install` | `chacc-dependency-manager` | Speed Improvement |
 | :--- | :--- | :--- | :--- |
@@ -203,20 +209,20 @@ ChaCC's primary advantage is its intelligent caching. On the first run, its spee
 
 ### Key Features
 
-*   🧠 **Smart Caching**: Only re-installs dependencies that have changed.
-*   🔄 **Incremental Updates**: Avoids full reinstalls, saving significant time.
-*   📦 **Multi-File Support**: Handles complex projects with multiple `requirements.txt` files.
-*   🐳 **Docker-Optimized**: Works seamlessly with Docker's layer caching for faster image builds.
-*   🔍 **Package Validation**: Verifies that cached packages are still installed correctly.
-*   📝 **Debug Logging**: Provides detailed output to help you understand caching behavior.
+*   **Smart Caching**: Only re-installs dependencies that have changed.
+*   **Incremental Updates**: Avoids full reinstalls, saving significant time.
+*   **Multi-File Support**: Handles complex projects with multiple `requirements.txt` files.
+*   **Docker-Optimized**: Works seamlessly with Docker's layer caching for faster image builds.
+*   **Package Validation**: Verifies that cached packages are still installed correctly.
+*   **Debug Logging**: Provides detailed output to help you understand caching behavior.
 
-## 🐳 Docker and CI/CD Integration
+## Docker and CI/CD Integration
 
-ChaCC is particularly effective in containerized and automated environments.
+ChaCC Dependency Manager is particularly effective in containerized and automated environments.
 
 ### Docker Usage
 
-Here is a simple, cache-friendly Dockerfile that leverages ChaCC.
+Here is a simple, cache-friendly Dockerfile that leverages ChaCC Dependency Manager.
 
 ```dockerfile
 FROM python:3.11-slim
@@ -227,7 +233,7 @@ RUN pip install chacc-dependency-manager[resolver]
 # Copy your requirements files
 COPY requirements*.txt ./
 
-# Install dependencies using ChaCC's intelligent caching
+# Install dependencies using ChaCC Dependency Manager's intelligent caching
 # This step will be almost instant if requirements haven't changed
 RUN cdm install
 
@@ -240,7 +246,7 @@ CMD ["python", "app.py"]
 
 ### CI/CD Pipeline Caching (GitHub Actions)
 
-You can use caching in your CI/CD pipelines to persist the ChaCC cache between runs.
+You can use caching in your CI/CD pipelines to persist the ChaCC Dependency Manager cache between runs.
 
 ```yaml
 - name: Cache dependencies
@@ -253,18 +259,18 @@ You can use caching in your CI/CD pipelines to persist the ChaCC cache between r
   run: cdm install
 ```
 
-## 🛠️ Advanced Topics
+## Advanced Topics
 
 ### Auto-Discovery of Requirements
 
-ChaCC can automatically discover requirement files based on common patterns.
+ Dependency Manager can automatically discover requirement files based on common patterns.
 
 **Supported Patterns:**
 *   `"requirements.txt"` (default)
 *   `"*.txt"`
 *   `"requirements-*.txt"`
 
-ChaCC will search for these files in the current directory or a specified `modules_dir`.
+ChaCC Dependency Manager will search for these files in the current directory or a specified `modules_dir`.
 
 ### Custom Hooks for Deeper Integration
 
@@ -313,31 +319,31 @@ class DependencyManager:
     def invalidate_module_cache(self, module_name: str): ...
 ```
 
-## 📋 Recent Updates (v1.2.0)
+## Recent Updates (v1.2.0)
 
 This major release introduces a complete API overhaul, advanced module-based caching, and comprehensive improvements to user experience and performance.
 
-### ✨ Major New Features
+### Major New Features
 
-**🏗️ Three-Tier API Architecture**
+**Three-Tier API Architecture**
 - **Simple Functions**: `re_resolve_dependencies()` - Just works with automatic caching
 - **Config Object Pattern**: Clean configuration without parameter explosion
 - **DependencyManager Class**: Full control over all aspects
 - **Backward Compatible**: All existing code continues to work unchanged
 
-**📦 Advanced Module-Based Caching**
+**Advanced Module-Based Caching**
 - **Module Separation**: Each module caches dependencies independently
 - **Selective Resolution**: Only re-resolve changed modules (massive performance gains)
 - **Individual Invalidation**: Clear cache for specific modules
 - **Hash-Based Change Detection**: Precise tracking of requirement changes
 
-**🎯 Intelligent Package Management**
+**Intelligent Package Management**
 - **Canonical Name Normalization**: Automatic handling of `package-name` vs `package_name`
 - **Package Extras Support**: Proper handling of `package[extra]` specifications
 - **Package Validation**: Verifies cached packages are actually installed
 - **Smart Installation**: Only installs missing packages
 
-**📊 Enhanced Visibility & Debugging**
+**Enhanced Visibility & Debugging**
 - **Visual Status Indicators**: ✅⚡📦🔄 for different operation types
 - **Detailed Logging**: Clear messages for every cache scenario
 - **Debug Information**: Comprehensive visibility into cache operations
@@ -349,13 +355,13 @@ This major release introduces a complete API overhaul, advanced module-based cac
 - **Extensible Hooks**: Pre/post resolution and custom installation hooks
 - **Clean Configuration**: No more parameter explosion
 
-**⬆️ Package Upgrades**
+**Package Upgrades**
 - **Upgrade Command**: `cdm upgrade` to update all packages to latest versions
 - **Selective Upgrades**: Upgrade specific packages or from specific requirements files
 - **Smart Cache Handling**: Automatic cache invalidation and refresh for upgrades
 - **Environment Awareness**: Respects module/environment separation during upgrades
 
-### 🔧 API Enhancements
+### API Enhancements
 
 **New Config Class:**
 ```python
@@ -387,7 +393,7 @@ cdm demo modules     # Show module separation
 cdm demo cache       # Show cache structure
 ```
 
-### 🐛 Critical Bug Fixes
+### Critical Bug Fixes
 
 - **Cache Validation Logic**: Fixed package extras handling (`passlib[bcrypt]` detection)
 - **Package Name Normalization**: Consistent hyphen/underscore handling
@@ -395,30 +401,30 @@ cdm demo cache       # Show cache structure
 - **Module Cache Invalidation**: Proper per-module cache clearing
 - **Path Resolution**: Absolute paths for cache directories
 
-### 📈 Performance Improvements
+### Performance Improvements
 
 - **Selective Resolution**: Only resolve changed modules instead of everything
 - **Smart Package Checking**: Canonical name matching for accurate validation
 - **Efficient Caching**: Module-level granularity reduces unnecessary work
 - **Batch Installation**: Optimized pip install operations
 
-### 📚 Documentation & Examples
+### Documentation & Examples
 
 - **Comprehensive API Reference**: All classes, methods, and parameters documented
 - **Integration Examples**: FastAPI, Django, Flask usage patterns
 - **Migration Guide**: How to upgrade from old API to new three-tier system
 - **Demo System**: Interactive visualization of internal mechanics
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 *   **Parallel Resolution**: Resolve dependencies for multiple modules at the same time.
 *   **Dependency Graph Visualization**: Create visual representations of your project's dependencies.
 *   **Security Scanning**: Integrate with vulnerability scanners to check your dependencies.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! If you'd like to contribute, please ensure that all tests pass, include comprehensive documentation, and follow semantic versioning.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
